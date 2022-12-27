@@ -1,0 +1,46 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: cluster-stage
+  region: xxxx
+  tags:
+    environment: staging
+    role: cluster-stage
+vpc:
+  id: "vpc-xxxx"
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: false
+  subnets:
+    private: 
+      xxxx:
+        id: "xxxx"
+      xxxx:
+        id: "xxxx"
+      xxxx:
+        id: "xxxx"
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+managedNodeGroups:
+  - name: test1
+    instanceType: m1.xlarge
+    privateNetworking: true
+    minSize: 1
+    desiredCapacity: 3
+    maxSize: 5
+    availabilityZones: ["xxxx", "xxx", "xxx"]
+    volumeSize: 100
+    tags:
+      Name: cluster-stage
+      role: cluster-stage
+      environment: staging
+    ssh:
+      allow: false
+    labels: {role: worker}  
+    iam:
+      withAddonPolicies: 
+        externalDNS: true
+        ebs: true
+        albIngress: true
+  
