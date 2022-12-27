@@ -41,6 +41,13 @@ resource "aws_s3_bucket_public_access_blcok" "test3" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_policy" "test8" {
+  bucket = aws_s3_bucket.test8.id
+  policy = templatefile("${path.module}")
+  {
+    principals = jsonencode(local.est),
+    region = "xxxx"
+    env = "staging"
 
 
 
