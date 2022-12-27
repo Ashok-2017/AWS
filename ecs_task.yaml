@@ -1,0 +1,34 @@
+data "aws_iam_role" "ecs_exec" {
+  name = "ExecEcsContainer"
+}
+
+resource "aws_ecs_task_definition" "test" {
+  family = "test-task-staging"
+  container_definitions = templatefile("task_definitions/test.json.tmpl", {image=local.image, env=local.Env})
+  execution_role_arn = 
+  
+  cpu = 1024
+  memory = 1024
+  
+  network_mode = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  tags {
+    environment = "staging"
+    }
+ }
+ 
+ resource "aws_ecs_task_definition" "test2" {
+   family = "test2-task"
+   container_definitions = templatefile("task_definitions/test2.json.tmpl", {image=local.image, env=local.env})
+   execution_role_arn = 
+   
+   cpu = 1024
+   memory = 1024
+   
+   network_mode = "aawsvpc"
+   requires_compatibilities = ["FARGATE"]
+   tags {
+     environment = "staging"
+     }
+   }
+ 
