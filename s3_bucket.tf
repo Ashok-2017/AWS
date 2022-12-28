@@ -31,7 +31,7 @@ output "s3_bucket_id" {
 output "s3_bucket_arn" {
   value = aws_s3_bucket.test.arn
 }
-resource "aws_s3_bucket_public_access_blcok" "test3" {
+resource "aws_s3_bucket_public_access_block" "test3" {
   count = 4
   bucket = var.bucket_name
   
