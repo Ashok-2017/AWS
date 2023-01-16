@@ -16,7 +16,7 @@ resource "aws_route53_record" "dns_record" {
 }
 
 resource "aws_route53_record" "refer" {
-  name = "one1"
+  name = " "
   type = "A"
   zone_id = 
   alias {
@@ -25,4 +25,27 @@ resource "aws_route53_record" "refer" {
     zone_id = 
   }
 } 
+
+resource "aws_route53_zone" "t2" {
+  name = "  "
+}
+
+resource "aws_acm_certificate" "t3" {
+  domain_name = " "
+  validation_method = "DNS"
+  subject_alternative_names = ["^.*$"]
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate_validation" "t4" {
+  count = 2
+  certificate_arn = aws_acm_certificate.t3.arn
+  validation_record_fqdns = 
+}  
+  
+
+
+
   
