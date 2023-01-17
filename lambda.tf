@@ -4,5 +4,8 @@ resource "aws_lambda_permission" "external" {
   function_name = data.aws_lambda_function
   principal = "s3.amazonaws.com"
   source_arn = 
-}  
+} 
+
+resource "aws_lambda_permission" "allow" {
+  
   
