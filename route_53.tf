@@ -65,7 +65,15 @@ resource "aws_route53_record" "mx_subdomains" {
   type = "MX"
   ttl = "600"
   records = [" 10 "]
-  
+}
+
+resource "aws_ses_domain_identity" "t6" {
+  domain = " "
+}
+
+resource "aws_ses_domain_identity_verification" "t7" {
+  domain = aws_ses_domain_identity.t6.id
+  depends_on = [aws_route53_record.]
 
 
 
