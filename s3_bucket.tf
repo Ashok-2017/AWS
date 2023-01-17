@@ -51,6 +51,54 @@ resource "aws_s3_bucket_policy" "test8" {
   }
 }
 
+data "aws_iam_policy_document" "access_data" {
+  statement {
+     sid = "LoadBalancerAllowWrite"
+     actions = ["s3:PutObject"]
+     resources = [ ]
+     principals {
+        identifiers = [ ]
+        type = "AWS"
+     }
+  }
+}
+
+resource "aws_s3_bucket" "access_data" {
+  bucket = " "
+  acl = "log-delivery-write"
+  policy = data.aws_iam_policy_document.access_data.json
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+  versioning {
+    enabled = true
+  }
+  tags = {
+    environment = local.Environment
+  }
+}
+
+data "aws_sqs_queue" "file" {
+  name = " "
+}
+
+resource "aws_s3_bucket_notification" "f1" {
+  bucket = aws_s3_bucket.access_data.id
+  queue {
+    queue_arn = data.aws_sqs_queue.file.arn
+    events = ["s3:ObjectCreated:*"]
+    filter_prefix = " /"
+    filter_suffix = ".pdf"
+  }
+} 
+    
+  
+ 
+
 
 
 
