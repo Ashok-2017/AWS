@@ -28,7 +28,7 @@ resource "aws_route53_record" "refer" {
 
 resource "aws_route53_zone" "t2" {
   name = "  "
-}
+}..
 
 resource "aws_acm_certificate" "t3" {
   domain_name = " "
@@ -44,7 +44,30 @@ resource "aws_acm_certificate_validation" "t4" {
   certificate_arn = aws_acm_certificate.t3.arn
   validation_record_fqdns = 
 }  
+resource "aws_route53_record" "verify" {
+  zone_id = 
+  name = " "
+  type = "TXT"
+  ttl = "600"
+  records = [aws_ses_domain_identity.verify]
+}
+resource "aws_route53_record" "mx" {
+  zone_id = aws_route53_zone.
+  name = aws_ses_domain_identity
+  type = "MX"
+  ttl = "600"
+  records = ["10 "]
+}
+resource "aws_route53_record" "mx_subdomains" {
+  for_each = toset(local.Envs)
+  zone_id = aws_route53_zone.verify.zone_id
+  name = "${each.key}.${aws_ses_domain_identity.t1.id}"
+  type = "MX"
+  ttl = "600"
+  records = [" 10 "]
   
+
+
 
 
 
