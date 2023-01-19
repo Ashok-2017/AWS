@@ -171,6 +171,67 @@ resource "aws_s3_bucket" "b1" {
     restrict_public_buckets = true
   }  
   
+  resource "aws_s3_bucket" "b1" {
+    acl = "public-read"
+    bucket = 
+    
+    versioning {
+      enabled = true 
+    }
+    server_side_encryption_configuration {
+      rule {
+        apply_server_side_encryption_by_default {
+          sse_algorithm = "AES256"
+        }
+      }
+    }
+    
+    website {
+      error_document = "error.html"
+      index_document = "index.html"
+      routing_rules = jsonencode(
+        [
+          {
+            Condition = {
+              HttpErrorCodeReturnedEquals = "404"
+            }
+            Redirect = {
+              HostName = "www.google.com"
+            }
+          },
+          
+        ]
+       )
+    }
+  }
+  
+  lifecycle_rule {
+    enabled = "${var.lifecycle_rule["enabled"]}"
+    expiration {
+      days = "${var.lifecycle_rule["expiration_days"]}"
+    }
+  }
+  
+  grant {
+    id = 
+    type = "User"
+    permissions = ["FULL_CONTROL"]
+  }
+  grant {
+    type = "Group"
+    permissions = ["READ", "WRITE"]
+    uri = " "
+  }
+}
+  
+  
+  
+    
+              
+    
+    
+    
+  
  
 
 
