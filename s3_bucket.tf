@@ -96,6 +96,80 @@ resource "aws_s3_bucket_notification" "f1" {
   }
 } 
     
+variable "lifecycle_rule" {
+  type = map(string)
+  default = {
+    enabled = false
+    expiration_days = 300
+  }
+}
+
+locals {
+  logging_enabled = length(keys(var.logging)) > 0
+  logging = local.logging_enabled ? [var.logging] : []
+  website_enabled = length(keys(var.website)) > 0
+  website = local.website_enabled ? [var.website]: []
+}
+variable "logging" {
+  type = map(string)
+  default = {}
+}
+variable "website" {
+  type = map(string)
+  default = {}
+}
+
+resource "aws_s3_bucket" "b1" {
+  bucket = var.bucket_name
+  acl = var.bucket_acl
+  versioning {
+    enabled = var.versioned
+  }
+  
+  dynamic "logging" {
+    for_each = local.logging
+    
+    content {
+      target_bucket = logging.value
+      target = lookup(logging.value, "target", null)
+    }
+  }
+  
+  dynamic "website" {
+    for_each = local.website
+    content {
+      redirect_all_requests_to = lookup(website.value, "redirect_all_requests_to", null)
+    }
+  }
+  lifecycle_rule {
+    enabled = var.lifecycle_rule["enabled"]
+    expiration {
+      days = var.lifecycle_rule["expiration_days"]
+    }
+  }
+  
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = var.sse_algorithm
+      }
+    }
+  }
+  tags = var.bucket_tags
+  
+  resource "aws_s3_bucket_policy" "bucket_policy" {
+    bucket = aws_s3_bucket.bucket.id
+    policy = templatefile("../", {bucket_arn = aws_s3_bucket.bucket.arn, additional_policy = })
+  }
+  
+  resource "aws_s3_bucket_public_access_block" "bucket" {
+    count = 
+    bucket = 
+    block_public_acls = true
+    ignore_public_acls = true
+    block_public_policy = true
+    restrict_public_buckets = true
+  }  
   
  
 
