@@ -36,3 +36,31 @@ resource "aws_vpc_peering_connection_acceptor" "peer4" {
     "Name"          = ""
   }
 }
+
+resource "aws_vpc_peering_connection" "req" {
+  provider = aws.r1
+  vpc_id = tolist(data.aws_vpcs.ids)[0]
+  peer_vpc_id = tolist(data.aws_vpcs.ids)[0]
+  peer_owner_id = data.aws_caller_identity.account_id
+  auto_accept = false
+  
+  tags = {
+    "side" = "requestor"
+    "environment" = "staging"
+    "Name" = " "
+  }
+}
+
+resource "aws_vpc_peering_connection_acceptor" "acceptor" {
+  provider = aws.r2
+  vpc_peering_connection_id = aws_vpc_peering_connection.id
+  auto_accept = true
+  
+  tags = {
+    side = "acceptor"
+    "environment" = "dev"
+    "Name" = " "
+  }
+} 
+
+
