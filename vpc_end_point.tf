@@ -74,7 +74,25 @@ resource "aws_lb_target_group" "group" {
   }
 }
 
-resource "
+resource "aws_lb_target_group_attachment" "a1" {
+  for_each = toset(var.targets)
+  target_group_arn = aws_lb_target_group.group.arn
+  target_id = each.value
+  port = var.port
+}
+
+module "raf_api_target_group" {
+  source = "../../modules/target_group"
+  name = "oma-ec2-alb"
+  port = 443
+  protocol = "HTTPS"
+  vpc_id = var.vpc_id["${local.Env}"]
+  target_type = "ip"
+  env = "staging"
+  targets = [ for eni in data.aws_network: eni.private_ip ]
+  ping_path = "/ping"
+  matcher = "200, 403"
+}    
   
   
 
