@@ -81,9 +81,9 @@ resource "aws_lb_target_group_attachment" "a1" {
   port = var.port
 }
 
-module "raf_api_target_group" {
+module "api_target_group" {
   source = "../../modules/target_group"
-  name = "oma-ec2-alb"
+  name = "ec2-alb"
   port = 443
   protocol = "HTTPS"
   vpc_id = var.vpc_id["${local.Env}"]
@@ -91,8 +91,37 @@ module "raf_api_target_group" {
   env = "staging"
   targets = [ for eni in data.aws_network: eni.private_ip ]
   ping_path = "/ping"
-  matcher = "200, 403"
-}    
+  matcher = "200, 403"     
+}  
+
+module "api_alb" {
+  source = "../../modules/aws_lb"
+  name = "alb-api"
+  internal = true
+  security_groups = concat(var.security_group_ids["${local.Env}"]["api"])
+  subnet_ids = var.subnet_ids["${local.env}"]
+  idle_timeout = 300
+  access_logs_bucket = " "
+  access_logs_prefix = " "
+  certificate_arn = data.aws_acm_certificate
+  target_group_arn = 
+  env = local.Environment
+}
+ resource "aws_vpc_endpoint" "s3" {
+  count = terraform.workspace == "dev" ? 1 : 0
+  vpc_id = var.vpc_id["${local.Env}"]
+  service_name = " "
+  tags = local.common_tags 
+}
+
+resource "aws_vpc_endpoint_route_table_association" "s3" {
+  for_each = toset(var.s3_endpoint-[local.Env])
+  route_table_id = each.key
+  vpc_endpoint_id = aws_vpc_endpoint.s3.0.id
+}  
+  
+  
+  
   
   
 
