@@ -119,6 +119,57 @@ resource "aws_vpc_endpoint_route_table_association" "s3" {
   route_table_id = each.key
   vpc_endpoint_id = aws_vpc_endpoint.s3.0.id
 }  
+
+resource "aws_lb" "l1" {
+  name = var.name
+  internal = var.internal
+  security_groups = var.security_groups
+  subnets = var.subnet_ids
+  enable_deletion_protection = true
+  idle_timeout = var.idle_timeout
+  load_balancer_type = var.lb_type
+  access_logs {
+    enabled = true
+    bucket = 
+    prefix = 
+  }
+  tags = {
+    "environment" = var.env
+  }
+  
+  resource "aws_lb_listener" "listener_non" {
+    load_balancer_arn = aws_lb.lb.arn
+    port = var.port_nonssl
+    protocol = var.protocol_non
+    default_action {
+      type = "redirect" 
+      
+      redirect {
+        port = var.port_ssl
+        protocol = var.protocol_ssl
+        status = var.status_code_redirect
+      }
+    }
+  }
+  
+  resource "aws_lb_listener" "list" {
+    load_balancer_arn = aws_lb.lb.arn
+    port = var.port_ssl
+    protocol = var.protocol_ssl
+    certificate_arn = var.certificate_arn
+    
+    default_action {
+      target_group_arn = var.target_group_arn
+      type = "forward"
+    }
+  } 
+    
+      
+    
+  
+  
+  
+  
   
   
   
